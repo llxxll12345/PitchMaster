@@ -1,8 +1,9 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+Moified from code in this example:
+https://developer.apple.com/documentation/accelerate/visualizing_sound_as_an_audio_spectrogram
 
-Abstract:
-The class that provides a signal that represents a drum loop.
+This file defines the microphone input handling class and processing logic.
+
 */
 
 import Accelerate
