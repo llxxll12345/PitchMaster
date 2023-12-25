@@ -25,14 +25,7 @@ struct SongDetailView: View {
                 Text("Lowest Pitch: \(String(format: "%d", song.lowestPitch))")
                 Text("Best score: \(String(format: "%.1f", song.bestScore))")
             }
-            NavigationLink(destination: PracticeView(expectedNotes: notes, song: song).environmentObject(settings)) {
-                Text("Go Practice").font(.headline)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .padding()
-            }
+            
             List {
                 ForEach(notes, id: \.self) { note in
                     HStack {
@@ -45,6 +38,11 @@ struct SongDetailView: View {
             
         }.onAppear() {
             notes = decodeJsonString(jsonString: song.notes ?? "")
-        }
+        }.navigationTitle("Song Details")
+            .navigationBarItems(trailing:
+                NavigationLink(destination: PracticeView(expectedNotes: notes, song: song).environmentObject(settings)) {
+                    Text("Go Practice!").font(.headline)
+                }
+            )
     }
 }

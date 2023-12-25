@@ -21,29 +21,26 @@ struct SonglistView: View {
     @State private var isAddingItem = false
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(songs) { song in
-                    NavigationLink(destination: SongDetailView(song: song).environmentObject(settings)) {
-                        Text("\(song.name ?? "")")
-                    }
+        List {
+            ForEach(songs) { song in
+                NavigationLink(destination: SongDetailView(song: song).environmentObject(settings)) {
+                    Text("\(song.name ?? "")")
                 }
-                .onDelete(perform: deleteItems)
             }
-            .navigationTitle("Song List")
-            .navigationBarItems(trailing:
-                Button(action: {
-                    isAddingItem = true
-                }) {
-                    Image(systemName: "plus")
-                }
-            )
-            .sheet(isPresented: $isAddingItem, content: {
-                AddSongView(isPresented: $isAddingItem)
-                    .environment(\.managedObjectContext, viewContext)
-            })
+            .onDelete(perform: deleteItems)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationTitle("Song List")
+        .navigationBarItems(trailing:
+            Button(action: {
+                isAddingItem = true
+            }) {
+                Image(systemName: "plus")
+            }
+        )
+        .sheet(isPresented: $isAddingItem, content: {
+            AddSongView(isPresented: $isAddingItem)
+                .environment(\.managedObjectContext, viewContext)
+        })
     }
 
 

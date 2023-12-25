@@ -66,40 +66,41 @@ struct FreeSingView: View {
                 .padding()
                 settingsButton
             }
-            
-            FreeSingVisualizer(lowestPitch: $startNote, octaves: $octaves, showNotes: $settings.showNoteNames, freeSingManager: freeSingManager)
             HStack {
-                Text("Time passed: \(String(format: "%.2f", freeSingManager.timeElapsed)) seconds")
+                Text("Time: \(String(format: "%.2f", freeSingManager.timeElapsed)) seconds")
+                    .font(.headline)
+                    .padding()
+                Text("Note: \(freeSingManager.noteName)")
                     .font(.headline)
                     .padding()
                 Text("Freq: \(String(format: "%.2f", freeSingManager.loudestFrequency)) Hz")
                     .font(.headline)
                     .padding()
             }
+            FreeSingVisualizer(lowestPitch: $startNote, octaves: $octaves, showNotes: $settings.showNoteNames, freeSingManager: freeSingManager)
+            
             HStack {
-                Text("Note: \(freeSingManager.noteName)")
-                    .font(.headline)
-                    .padding()
-            }
-            HStack {
-                Button(action: {
-                    self.freeSingManager.startTimer()
-                }) {
-                    Text("Start")
+                if !freeSingManager.isRunning {
+                    Button(action: {
+                        self.freeSingManager.startTimer()
+                    }) {
+                        Image(systemName: "play")
+                    }.frame(width: 50, height: 50).padding()
+                } else {
+                    Button(action: {
+                        self.freeSingManager.pauseTime()
+                    }) {
+                        Image(systemName: "pause")
+                    }
+                    .frame(width: 50, height: 50).padding()
                 }
-                .padding()
-                Button(action: {
-                    self.freeSingManager.pauseTime()
-                }) {
-                    Text("Pause")
-                }
-                .padding()
+                
                 Button(action: {
                     self.freeSingManager.resetTimer()
                 }) {
-                    Text("Reset")
+                    Image(systemName: "stop")
                 }
-                .padding()
+                .frame(width: 50, height: 50).padding()
             }
         }.alert(isPresented: $freeSingManager.showAlert) {
             Alert(
@@ -118,6 +119,6 @@ struct FreeSingView: View {
 
 struct FreeSingView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().environmentObject(Settings())
     }
 }

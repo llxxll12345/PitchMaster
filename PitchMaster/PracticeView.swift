@@ -53,10 +53,8 @@ struct PracticeView: View {
                 Spacer()
                 settingsButton
             }
-            
-            PracticeVisualizer(lowestPitch: Int(song.lowestPitch), highestPitch: Int(song.highestPitch), practiceManager: self.practiceManager, showNotes: $settings.showNoteNames)
             HStack {
-                Text("Time passed: \(String(format: "%.2f", practiceManager.timeElapsed)) seconds")
+                Text("Time: \(String(format: "%.2f", practiceManager.timeElapsed)) seconds")
                     .font(.headline)
                     .padding()
                 Text("You sang: \(practiceManager.noteName)")
@@ -65,32 +63,34 @@ struct PracticeView: View {
                 Text("Expected: \(practiceManager.expectedNoteName)")
                     .font(.headline)
                     .padding()
-                Text("\(practiceManager.noteName)")
-                    .font(.headline)
-                    .padding()
-                Text("Score: \(String(format: "%.1f", practiceManager.score))")
+                Text("Score: \(String(format: "%.1f", practiceManager.score))/100")
                     .font(.headline)
                     .padding()
             }
+            PracticeVisualizer(lowestPitch: Int(song.lowestPitch), highestPitch: Int(song.highestPitch), practiceManager: self.practiceManager, showNotes: $settings.showNoteNames)
+           
             HStack {
-                Button(action: {
-                    self.practiceManager.startTimer()
-                }) {
-                    Text("Start")
+                if !practiceManager.isRunning {
+                    Button(action: {
+                        self.practiceManager.startTimer()
+                    }) {
+                        Image(systemName: "play")
+                    }.frame(width: 50, height: 50).padding()
+                } else {
+                    Button(action: {
+                        self.practiceManager.pauseTime()
+                    }) {
+                        Image(systemName: "pause")
+                    }
+                    .frame(width: 50, height: 50).padding()
                 }
-                .padding()
-                Button(action: {
-                    self.practiceManager.pauseTime()
-                }) {
-                    Text("Pause")
-                }
-                .padding()
+                
                 Button(action: {
                     self.practiceManager.resetTimer()
                 }) {
-                    Text("Reset")
+                    Image(systemName: "stop")
                 }
-                .padding()
+                .frame(width: 50, height: 50).padding()
             }
         }.onAppear {
             practiceManager.duration = Float(song.duration)

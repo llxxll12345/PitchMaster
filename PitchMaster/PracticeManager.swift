@@ -57,10 +57,12 @@ class PracticeManager: NoteDisplayStateManager {
     override func startTimer() {
         super.startTimer()
         self.score = 0
+        self.scorableCount = 0
     }
     
     override func resetTimer() {
         super.resetTimer()
         self.noteIndex = 0
+        self.scorableCount = 0
     }
 }

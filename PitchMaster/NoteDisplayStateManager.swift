@@ -24,7 +24,6 @@ class NoteDisplayStateManager: ObservableObject {
     
     let microphoneInput = MicrophoneInput()
     
-    
     var beats: Int {
         return Int(timeElapsed/(60.0/Float(speed)))
     }
