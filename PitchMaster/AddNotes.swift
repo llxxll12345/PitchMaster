@@ -28,7 +28,7 @@ struct AddNotesView: View {
         VStack {
             List {
                 ForEach(notes.indices, id: \.self) { index in
-                    Text("\(notes[index].id)")
+                    NoteDetailView(note: notes[index])
                 }
                 .onDelete(perform: deleteItem)
             }

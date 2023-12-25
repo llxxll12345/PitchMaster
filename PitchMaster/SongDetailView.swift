@@ -29,9 +29,7 @@ struct SongDetailView: View {
             List {
                 ForEach(notes, id: \.self) { note in
                     HStack {
-                        Text("Note: \(midiToNoteName(_:note.id))")
-                        Text("Start: \(String(format: "%.2f", note.start))")
-                        Text("Duration: \(String(format: "%.2f", note.duration))")
+                        NoteDetailView(note: note)
                     }
                 }
             }
