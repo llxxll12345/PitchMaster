@@ -28,9 +28,7 @@ struct SongDetailView: View {
             
             List {
                 ForEach(notes, id: \.self) { note in
-                    HStack {
-                        NoteDetailView(note: note)
-                    }
+                    NoteDetailView(note: note)
                 }
             }
             

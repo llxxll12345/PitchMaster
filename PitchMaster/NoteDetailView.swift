@@ -10,12 +10,14 @@ import SwiftUI
 struct NoteDetailView: View {
     var note: Note
     var body: some View {
-        if note.id == 0 {
-            Text("Rest")
-        } else {
-            Text("Note: \(midiToNoteName(_:note.id))")
+        HStack {
+            if note.id == 0 {
+                Text("Rest")
+            } else {
+                Text("Note: \(midiToNoteName(_:note.id))")
+            }
+            Text("Start: \(String(format: "%.2f", note.start))")
+            Text("Duration: \(String(format: "%.2f", note.duration))")
         }
-        Text("Start: \(String(format: "%.2f", note.start))")
-        Text("Duration: \(String(format: "%.2f", note.duration))")
     }
 }
