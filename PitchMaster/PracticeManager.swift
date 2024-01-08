@@ -18,9 +18,7 @@ class PracticeManager: NoteDisplayStateManager {
     var expectedNoteName: String = "--"
     var score: Double = 0
     var scorableCount: Double = 0
-    var playbackSpeed: Float {
-        Float(speed)/Float(defaultBPM)
-    }
+    var playbackSpeed: Float = 1.0
     
     override func finishedAllNotes() -> Bool {
         return self.timeElapsed >= self.duration / self.playbackSpeed + PracticeManager.BUFFER_TIME
@@ -64,5 +62,8 @@ class PracticeManager: NoteDisplayStateManager {
         super.resetTimer()
         self.noteIndex = 0
         self.scorableCount = 0
+        if self.saveRecording {
+            self.saveToFile = true
+        }
     }
 }

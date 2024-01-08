@@ -17,15 +17,6 @@ struct PracticeView: View {
     @EnvironmentObject private var settings: Settings
     @Environment(\.managedObjectContext) private var viewContext
     
-    var settingsButton: some View {
-        Button(action: {
-            settingsButtonTapped = true
-        }) {
-            Image(systemName: "gear")
-                .imageScale(.large)
-        }
-    }
-    
     var body: some View {
         VStack() {
             HStack{
@@ -41,17 +32,24 @@ struct PracticeView: View {
                         .frame(width: 50, height: 50)
                 }
                 Text("Default BPM: \(String(format: "%d", song.defaultBPM))")
-                Text("Target BPM")
-                    .padding().disabled(practiceManager.isRunning)
-                Picker("Select BPM", selection: $practiceManager.speed) {
-                    ForEach(40..<180) { index in
-                        Text("\(index)")
-                            .tag(index)
-                    }
+                Text("Speed x\(String(format: "%.1f", practiceManager.playbackSpeed))")
+                Slider(
+                   value: $practiceManager.playbackSpeed,
+                   in: 0.1...5.0,
+                   step: 0.1,
+                   minimumValueLabel: Text("0.1"),
+                   maximumValueLabel: Text("5.0")
+                ) {
+                   Text("Playback speed")
                 }
+                .disabled(practiceManager.isRunning)
                 .padding()
                 Spacer()
-                settingsButton
+                Toggle(isOn: $practiceManager.saveRecording) {
+                    Text("Save recording")
+                }
+                .padding()
+                SettingsButton(settingsButtonTapped: $settingsButtonTapped)
             }
             HStack {
                 Text("Time: \(String(format: "%.2f", practiceManager.timeElapsed)) seconds")
@@ -96,10 +94,10 @@ struct PracticeView: View {
             practiceManager.duration = Float(song.duration)
             practiceManager.expectedNotes = expectedNotes
             practiceManager.defaultBPM = Int(song.defaultBPM)
-        }.sheet(isPresented: $settingsButtonTapped, content: {
-            SettingsView()
-        }).onDisappear() {
+        }.onDisappear() {
             saveScore()
+        }.sheet(isPresented: $practiceManager.saveToFile) {
+            SaveRecordingView(manager: practiceManager)
         }
     }
     

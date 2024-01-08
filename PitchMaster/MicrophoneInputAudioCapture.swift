@@ -3,11 +3,10 @@ Moified from code in this example:
 https://developer.apple.com/documentation/accelerate/visualizing_sound_as_an_audio_spectrogram
 
 This file defines the microphone input handling class extension to implement functions the 
- AVCaptureAudioDataOutputSampleBufferDelegate protocol.
+ AVCaptureAudioDataOutputSampleBufferDelegate protocol. 
 */
 
 import AVFoundation
-
 
 extension MicrophoneInput: AVCaptureAudioDataOutputSampleBufferDelegate {
  
@@ -33,8 +32,7 @@ extension MicrophoneInput: AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         
         /// The _Nyquist frequency_ is the highest frequency that a sampled system can properly
-        /// reproduce and is half the sampling rate of such a system. Although  this app doesn't use
-        /// `nyquistFrequency`,  you may find this code useful to add an overlay to the user interface.
+        /// reproduce and is half the sampling rate of such a system.
         if nyquistFrequency == nil {
             let duration = Float(CMSampleBufferGetDuration(sampleBuffer).value)
             let timescale = Float(CMSampleBufferGetDuration(sampleBuffer).timescale)
@@ -42,14 +40,13 @@ extension MicrophoneInput: AVCaptureAudioDataOutputSampleBufferDelegate {
             nyquistFrequency = 0.5 / (duration / timescale / numsamples)
         }
         
-        /// Because the audio spectrogram code requires exactly `sampleCount` (which the app defines
-        /// as 1024) samples, but audio sample buffers from AVFoundation may not always contain exactly
-        /// 1024 samples, the app adds the contents of each audio sample buffer to `rawAudioData`.
-        ///
-        /// The following code creates an array from `data` and appends it to  `rawAudioData`:
+        /// The size of the sampleBuffer isn't always sampleCount so we append until
+        ///  we get enough data.
         if self.rawAudioData.count < MicrophoneInput.sampleCount * 2 {
             let actualSampleCount = CMSampleBufferGetNumSamples(sampleBuffer)
             
+            // data is an unsafe raw pointer and we are accessing
+            // it as an Int16 array with actualSampleCount elements.
             let pointer = data.bindMemory(to: Int16.self,
                                           capacity: actualSampleCount)
             let buffer = UnsafeBufferPointer(start: pointer,
@@ -58,16 +55,18 @@ extension MicrophoneInput: AVCaptureAudioDataOutputSampleBufferDelegate {
             rawAudioData.append(contentsOf: Array(buffer))
         }
 
-        /// The following code app passes the first `sampleCount`elements of raw audio data to the
-        /// `processData(values:)` function, and removes the first `hopCount` elements from
-        /// `rawAudioData`.
-        ///
-        /// By removing fewer elements than each step processes, the rendered frames of data overlap,
-        /// ensuring no loss of audio data.
+        /// Move the sliding window of size sampleCount on rawAudioData forward by hopCount
+        ///  when we have enough data.
         while self.rawAudioData.count >= MicrophoneInput.sampleCount {
             let dataToProcess = Array(self.rawAudioData[0 ..< MicrophoneInput.sampleCount])
             self.rawAudioData.removeFirst(MicrophoneInput.hopCount)
             self.processData(values: dataToProcess)
+        }
+        
+        if self.saveRecording {
+            if let pcmData = convertToPCMData(sampleBuffer: sampleBuffer) {
+                accumulatedData.append(pcmData)
+            }
         }
     }
     
@@ -117,7 +116,7 @@ extension MicrophoneInput: AVCaptureAudioDataOutputSampleBufferDelegate {
         captureSession.commitConfiguration()
     }
     
-    func startRunning() {
+    func startRunning(saveRecording: Bool) {
         sessionQueue.async {
             if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
                 self.captureSession.startRunning()

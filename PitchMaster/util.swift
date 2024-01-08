@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 func frequencyToMIDI(_ frequency: Float) -> Int {
     if frequency < 1 {
@@ -44,4 +44,5 @@ func convertToInt(stringInput: String) -> Int {
        return -1
    }
 }
+
 

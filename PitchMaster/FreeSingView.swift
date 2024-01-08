@@ -13,19 +13,9 @@ struct FreeSingView: View {
     @State var octaves : Int = 2
     @EnvironmentObject private var settings: Settings
     @State private var settingsButtonTapped: Bool = false
-    
-    var settingsButton: some View {
-        Button(action: {
-            settingsButtonTapped = true
-        }) {
-            Image(systemName: "gear")
-                .imageScale(.large)
-        }
-    }
 
     var body: some View {
         VStack() {
-            
             HStack{
                 if freeSingManager.tickerLeft {
                     Image("TickerLeft")
@@ -64,7 +54,11 @@ struct FreeSingView: View {
                 }
                 .disabled(freeSingManager.isRunning)
                 .padding()
-                settingsButton
+                Toggle(isOn: $freeSingManager.saveRecording) {
+                    Text("Save recording")
+                }
+                .padding()
+                SettingsButton(settingsButtonTapped: $settingsButtonTapped)
             }
             HStack {
                 Text("Time: \(String(format: "%.2f", freeSingManager.timeElapsed)) seconds")
@@ -110,9 +104,9 @@ struct FreeSingView: View {
                     freeSingManager.showAlert = false
                }
             )
-        }.sheet(isPresented: $settingsButtonTapped, content: {
-            SettingsView()
-        })
+        }.sheet(isPresented: $freeSingManager.saveToFile) {
+            SaveRecordingView(manager: freeSingManager)
+        }
     }
 }
 

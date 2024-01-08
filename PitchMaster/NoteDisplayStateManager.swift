@@ -21,6 +21,8 @@ class NoteDisplayStateManager: ObservableObject {
     @Published var noteNumber = 0
     @Published var noteName: String = ""
     @Published var displayedNotes = [Int](repeating: 0, count: WINDOW_SIZE)
+    @Published var saveRecording: Bool = false
+    @Published var saveToFile: Bool = false
     
     let microphoneInput = MicrophoneInput()
     
@@ -31,7 +33,7 @@ class NoteDisplayStateManager: ObservableObject {
     var timer = Timer()
     func startTimer() {
         if !isRunning {
-            self.microphoneInput.startRunning()
+            self.microphoneInput.startRunning(saveRecording: saveRecording)
             timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
                 self.timeElapsed += 0.01
                 if (self.beats % 2 == 0) {

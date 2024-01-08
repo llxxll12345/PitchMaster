@@ -19,6 +19,7 @@ class MicrophoneInput: NSObject {
         super.init()
         
         configureCaptureSession()
+        setupAudioConverter()
         audioOutput.setSampleBufferDelegate(self,
                                             queue: captureQueue)
     }
@@ -27,14 +28,10 @@ class MicrophoneInput: NSObject {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // Frequency samples
+
     static let sampleCount = 8192
-    /// Storing up to 100000 frequency data point.
-    static let bufferCount = 10000
-    
-    
     /// Determines the overlap between frames.
-    static let hopCount = 512
+    static let hopCount = sampleCount/2
 
     let captureSession = AVCaptureSession()
     let audioOutput = AVCaptureAudioDataOutput()
@@ -54,6 +51,10 @@ class MicrophoneInput: NSObject {
                                     usingSequence: .hanningDenormalized,
                                     count: sampleCount,
                                     isHalfWindow: false)
+    
+    var accumulatedData = Data()
+    var audioConverter: AudioConverterRef?
+    var saveRecording = false
     
     let dispatchSemaphore = DispatchSemaphore(value: 1)
      
